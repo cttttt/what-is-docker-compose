@@ -21,7 +21,7 @@
 - Not all of the things.
 
 
-## 0.1.1 `process.runner.extrordinare`
+## 0.1.1 `process.runner.extraordinaire`
 
 - Docker's great at running **processes**.
 - For example, to get the version of `bash`, you could run:
@@ -33,7 +33,7 @@ bash -v
 - Or you could run the same command using Docker:
 
 ```
-docker run -ti ubuntu bash -v
+docker run ubuntu bash -v
 ```
 
 > Docker is a **process** runner.
@@ -50,7 +50,7 @@ docker run -ti ubuntu bash -v
 - Consider the previous example:
 
 ```
-docker run -ti ubuntu bash -v
+docker run ubuntu bash -v
 ```
 
 - Here, `ubuntu` is the image.
@@ -62,9 +62,9 @@ docker run -ti ubuntu bash -v
 ### 0.1.3 `...with.isolation`
 
 - Docker is, at its core, a simplified interface to a bunch of features in Linux, called [Linux Containers](https://linuxcontainers.org), or LXC.
-- The part of the LXC infrastructure that we exercised just now is actually quite old and pre-dates the container movement on Linux by at least few decades.
-- `chroot` - Allows you to lock a process a sub-tree of `/`.
-- Effectively set `/` for a process and its children.
+- The part of the LXC infrastructure that we exercised just now is actually quite old and pre-dates the container movement on Linux by at least few decades:
+  - `chroot` - Allows you to lock a process a sub-tree of `/`.
+  - Effectively set `/` for a process and its children.
 - Docker employs many other features of LXC to provide isolation of the filesystem, as well as other subsystems:
   - Network sockets
   - Users
@@ -86,11 +86,13 @@ docker run -ti ubuntu bash -v
 
 _TODO: Insert diagram here._
 
-## 1.simple.apps
+## 1 `simple.apps`
 
-> Chris: Change branches to "simple.apps"
+> _Chris: Change branches to "simple.apps"_
 
 - Let's have a look at these three simple apps:
-  - An app that produces data.
-  - An app that consumes that data and renders it as a beautiful (time permitting) webpage.
-  - An app
+  - An app that produces data `/api/tweet`.
+  - An app that consumes that data and renders it as a beautiful (time permitting) webpage: `/tweet`.
+  - An app that consumes that data and renders it as plain text `/tweet/txt`.
+
+
