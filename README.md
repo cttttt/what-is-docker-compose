@@ -85,14 +85,50 @@ docker run ubuntu bash -v
 - A `unionfs` is a bunch of filesystems, layered.
 
 - Consider the complicated diagram below.
-  - The process on the top-right is **bound to** the container.  Anything it does is isolated, including file writes.
+  - The process on the right is **bound to** the container.  Anything it does is isolated, including file writes.
   - The isolated filesystem in a Docker container is layered.
   - The bottom layer is a reference to an image.
-  - New files go to the topmost layer.
+  - New files are simply written to the topmost layer.
   - Modified files are **copied** to the topmost layer.
   - Modifying a file twice just modifies it again in the top-layer.
   - aka: Copy-on-write.
   - Reads happen by trying the layers from top to bottom.
+
+```
+.----------------------.
+| container:           |<---------.
+|    name: fancy_pansy |          | bound to
+|                      |          |
+| isolated disk:       |       .--|-------------------------.
+|                      |       |                            |
+|  .-----------------. |       |  process: /usr/bin/bash    |
+|  | new layer   <----<writes>---          ^                |
+|  |                 | |       '-----------|----------------'
+|  |                 | |                <reads>
+|  |            ---------------------------|
+|  |    |            | |                   |
+|  .----|------------. |                   |
+|       |              |                   |
+'-------|--------------'                   |
+        |                                  |
+ <next layer below>                        |
+        |                                  |
+.-------|--------------.                   |
+|  .----|------------. |                   |
+|  |    v            | |                   |
+|  | image:          | |                <reads>
+|  |   ubuntu:14.04  | |                   |
+|  |                 | |                   |
+|  |            ---------------------------'
+|  |  /usr/bin/bash  | |  
+|  |  tonnes of files| |  
+|  |                 | |  
+|  '-----------------' |  
+'----------------------'  
+```
+
+- Now, let's add another container:  Notice that multiple **isolated filesystems** can point to a single image.
+
 
 ```
 .----------------------.
