@@ -9,13 +9,13 @@
 
 - To "get" the following, it helps to know:
   - How to write software (duh).
-  - How to make configurable software (see https://12factor.net/config)
+  - How to make configurable software (see https://12factor.net/config).
   - How to run that software (not so duh).
-  - As a stretch, how to setup a VM on which that software can run.
+  - As a stretch, how to setup a VM upon which that software can run.
 
-- If the first two points don't appeal to you, you'll be pretty bored during this talk.
+- If the first two points don't appeal to you, you'll be pretty bored during this talk.  Sorry.
 
-## 0.1 `what.is.docker.again`
+## 0.1 `what.is.docker...again`
 
 - A lot of things.
 - Not all of the things.
@@ -84,7 +84,73 @@ docker run ubuntu bash -v
 - Docker employs a trick in the form of a special filesystem, a **union filesystem** to make this instantaneous.
 - A `unionfs` is a bunch of filesystems, layered.
 
-_TODO: Insert diagram here._
+- Consider the complicated diagram below.
+  - The process on the top-right is **bound to** the container.  Anything it does is isolated, including file writes.
+  - The isolated filesystem in a Docker container is layered.
+  - The bottom layer is a reference to an image.
+  - New files go to the topmost layer.
+  - Modified files are **copied** to the topmost layer.
+  - Modifying a file twice just modifies it again in the top-layer.
+  - aka: Copy-on-write.
+  - Reads happen by trying the layers from top to bottom.
+
+```
+.----------------------.
+| container:           |<---------.
+|    name: fancy_pansy |          | bound to
+|                      |          |
+| isolated disk:       |       .--|-------------------------.
+|                      |       |                            |
+|  .-----------------. |       |  process: /usr/bin/bash    |
+|  | new layer   <----<writes>---          ^                |
+|  |                 | |       '-----------|----------------'
+|  |                 | |                <reads>
+|  |            ---------------------------|
+|  |    |            | |                   |
+|  .----|------------. |                   |
+|       |              |                   |
+'-------|--------------'                   |
+        |                                  |
+ <next layer below>                        |
+        |                                  |
+.-------|--------------.                   |
+|  .----|------------. |                   |
+|  |    v            | |                   |
+|  | image:          | |                <reads>
+|  |   ubuntu:14.04  | |                   |
+|  |                 | |                   |
+|  |            ---------------------------'
+|  |  /usr/bin/bash  | |  
+|  |  tonnes of files| |  
+|  |^   ^            | |  
+|  '|---|------------' |  
+'---|---|--------------'  
+    |   |
+    |   |
+    | <next layer above>
+    |   |
+    |	| .----------------------.
+    |	| | container:           |<---------.
+    |	| |  name: footsy_wootsy |          | bound to
+    |	| |                      |          |
+    |	| | isolated disk:       |       .--|-------------------------.
+    |	| |                      |       |                            |
+    |	| |  .-----------------. |       |  process: /usr/bin/bash    |
+    |	| |  |             <----<writes>---          ^                |
+    |	| |  |                 | |       '-----------|----------------'
+    |	| |  | new layer       | |                   |
+    |	'--------              | |                <reads>
+    |	  |  |                 | |                   |
+    |	  |  |            ---------------------------|
+    |	  |  |                 | |                   |
+    |	  |  '-----------------' |                   |
+    |	  |                      |                   |
+    |	  '----------------------'                   |
+    |                                             <reads>
+    |                                                |
+    '------------------------------------------------'
+```
+
 
 ## 1 `simple.apps`
 
@@ -95,4 +161,18 @@ _TODO: Insert diagram here._
   - An app that consumes that data and renders it as a beautiful (time permitting) webpage: `/tweet`.
   - An app that consumes that data and renders it as plain text `/tweet/txt`.
 
+## 2 `how.to.configure`
 
+_TODO: Describe these applications are configured_
+
+## 3 `how.to.run`
+
+_TODO: Describe how these applications can be run_
+
+
+
+
+
+
+
+vim:expandtab:shiftwidth=2:softtabstop=2
