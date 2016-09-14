@@ -13,6 +13,7 @@
   "dependencies": {
     "bluebird": "^3.4.6",
     "express": "^4.14.0",
+    "hoffman": "^0.2.2",
     "nconf": "^0.8.4",
     "request": "^2.74.0"
   }
