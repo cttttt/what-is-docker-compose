@@ -117,7 +117,7 @@ bash -v
 - Or you could run the same command using Docker:
 
 ```
-docker run ubuntu bash -v
+docker run ubuntu:14.04 bash -v
 ```
 
 > Docker is a **process** runner.
@@ -172,24 +172,24 @@ docker run ubuntu bash -v
 
 ```
 
-### 0.1.2 `...from.a.context`
+### 0.1.2 `...from.a.starting.point`
 
-- If Docker were just a command runner, that would be an aweful lot of overhead.
-- One of Docker's core features is its ability to run a command from a known context: An image.
+- If Docker were just a command runner, that would be an awful lot of overhead.
+- One of Docker's core features is its ability to run a command from a known starting point: An image.
 - What's an image?
   - Just a bunch of files.
-  - Oh, and a bit of metadata.
+  - ...and a bit of metadata.
 - In fact, the `ubuntu` image is a bunch of files that make up a base Ubuntu Linux installation, plus a few extra facts, like the default `PATH`.
 - Consider the previous example:
 
 ```
-docker run ubuntu bash -v
+docker run ubuntu:14.04 bash -v
 ```
 
 - Here, `ubuntu` is the image.
-- When Docker runs `bash -v` it effectively copies all of the files in the image somewhere, and runs `bash -v` from that _context_.
+- When Docker runs `bash -v` it effectively copies all of the files in the image somewhere, and runs `bash -v` from that _starting point_.
 
-> Docker provides a way to run **processes** from contexts, called **images**.
+> Docker provides a way to run **processes** from starting points, called **images**.
 
 
 ```
@@ -244,8 +244,8 @@ docker run ubuntu bash -v
 
 - Docker is, at its core, a simplified interface to a bunch of features in Linux, called [Linux Containers](https://linuxcontainers.org), or LXC.
 - The part of the LXC infrastructure that we exercised just now is actually quite old and pre-dates the container movement on Linux by at least few decades:
-  - `chroot` - Allows you to lock a process a sub-tree of `/`.
-  - Effectively set `/` for a process and its children.
+- `chroot` - Allows you to lock a process a sub-tree of `/`.
+- Effectively set `/` for a process and its children.
 - Docker employs many other features of LXC to provide isolation of the filesystem, as well as other subsystems:
   - Network sockets
   - Users
@@ -254,7 +254,7 @@ docker run ubuntu bash -v
   - Logging
 - ...pretty much everything except for the kernel:  There's only one kernel.
 
-> Docker provides a way to run **processes** from contexts, called **images** in isolated zones of execution called **containers**.
+> Docker provides a way to run **processes** from starting points, called **images** in isolated zones of execution called **containers**.
 
 
 ```
@@ -416,28 +416,281 @@ docker run ubuntu bash -v
     '------------------------------------------------'
 ```
 
+> Docker provides a way to run **processes** from starting points, called **images** in isolated zones of execution called **containers**.  Containers each have an isolated filesystem created by merging an image directory and an empty directory using a **union fs**.
+
+## 0.1.4 `starting.point.saver`
+
+- Docker will always run commands in an environment that starts from _the given image_.
+
+```
+$ docker run ubuntu:14.04 touch /tmp/newfile
+$ docker run ubuntu:14.04 ls -l /tmp/newfile
+ls: cannot access /tmp/newfile: No such file or directory
+```
+
+- To make a new starting point, run `docker commit`:
+
+```
+$ docker run ubuntu:14.04 touch /tmp/newfile
+$ docker ps -l
+CONTAINER ID ...
+b929e7eb9bf5 ...
+$ docker commit b929
+sha256:8993124434b105f661d4700d010bd815ae570665d0306a09dd150aeac90b6f96
+$ docker run 8993 ls -l /tmp/newfile
+-rw-r--r-- 1 root root 0 Sep 15 01:29 /tmp/newfile
+```
+
+> Docker provides a way to run **processes** from starting points, called **images** in isolated zones of execution called **containers**.  Containers each have an isolated filesystem created by merging an image directory and an empty directory using a **union fs**.  New images can be created by **committing** containers.
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+## 0.1.5 `starting.point.builder`
+
+- Creating images in this way is slow and tedious.
+- Docker provides an image builder, `docker build`.
+- `docker build`'s pretty simple:  It reads a file full of directives.
+- Outside of a few exceptions, after each directive, the builder will _commit_ a new image and remove the container that led to it.
+- When all of the directives are done, you got your final image.
+
+```
+# Create a Dockerfile:
+cat > Dockerfile <<DOCKERFILE
+FROM ubuntu:14.04
+RUN touch /tmp/newfile
+DOCKERFILE
+
+# Build the Dockerfile:
+docker build -t cttttt/result .
+
+# Run a container from your new image:
+docker run cttttt/result ls -l /tmp/newfile
+```
+
+> Docker provides a way to run **processes** from starting points, called **images** in isolated zones of execution called **containers**.  Containers each have an isolated filesystem created by merging an image directory and an empty directory using a **union fs**.  New images can be created by **committing** containers.  A **docker build** is an automated sequence of container creations and commits that also results in a new image.
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+## 0.1.6 `network.isolation`
+
+- Containers have a full set of free ports to listen on.
+- Within a container, only one process can listen on any given port, say `8080`.
+- However, a process in another container can simultaneously listen on the same numbered port...they're in different containers.
+- This is handy:  For example, we could listen on port `8080` in **every container** if we want to.
+
+```
+# Create a Dockerfile:
+cat > Dockerfile <<DOCKERFILE
+FROM ubuntu:14.04
+RUN apt-get update && apt-get install -y netcat
+DOCKERFILE
+
+# Build the Dockerfile:
+docker build -t cttttt/netcat .
+
+# Run a container from your new image:
+docker run -d cttttt/netcat nc -l 8080
+docker run -d cttttt/netcat nc -l 8080
+```
+
+- To have Docker tunnel traffic from a port on the host to a port in a container, use `-pHOST_PORT:CONTAINER_PORT`.
+
+In one terminal, run:
+  
+```
+docker run -ti -p 30303:8080 cttttt/netcat nc -l 8080
+``` 
+
+And in another, run:
+  
+```
+nc localhost 30303
+```
+
+> Docker provides a way to run **processes** from starting points, called **images** in isolated zones of execution called **containers**.  Containers each have **network and filesystem** isolation.  The isolated filesystem is created by merging an image directory and an empty directory using a **union fs**.  New images can be created by **committing** containers.  A **docker build** is an automated sequence of container creations and commits that also results in a new image.
+  
+# 0.1.7 `isolated.network`
+
+- Above, we set up routing allowing us to connect to a container from the host.
+- Container-to-contain communication is also allowed.
+- A year ago, this was sort of hacky (unidirectional links), but now you can create *virtual networks*.
+
+To create a network, run `docker network`:
+
+```
+docker network create demo
+```
+
+Then you can run a server:
+
+```
+docker rm -f ncserver
+docker run --network=demo --name=server -t cttttt/netcat nc -l 8080
+```
+
+...and in another terminal, run a client:
+
+```
+docker run --network=demo -ti -p 8080 cttttt/netcat nc server 8080
+```
+
+# 0.1.8 `summary`
+
+> * Docker provides a way to run **processes** from starting points, called **images** in isolated zones of execution called **containers**.  
+> * Containers each have **network and filesystem** isolation.  
+> * The isolated filesystem is created by merging an image directory and an empty directory using a **union fs**.  
+> * New images can be created by **committing** containers.  
+> * A **docker build** is an automated sequence of container creations and commits that also results in a new image.  
+> * Docker also allows the creation of **virtual networks**.  Containers bound to a virtual network each have a hostname corresponding to the container name and can communicate freely.
+
 
 ## 1 `simple.apps`
+
+Let's take a diversion from all this Docker stuff.
 
 > _Chris: Change branches to "simple.apps"_
 
 - Let's have a look at these three simple apps:
-  - An app that produces data `/api/tweet`.
-  - An app that consumes that data and renders it as a beautiful (time permitting) webpage: `/tweet.html`.
-  - An app that consumes that data and renders it as plain text `/tweet.txt`.
-
-## 2 `how.to.configure`
-
-_TODO: Describe these applications are configured_
-
-## 3 `how.to.run`
-
-_TODO: Describe how these applications can be run_
+  - **Tweet API**, an app that produces data: `/api/tweet`.
+  - **Tweet UI**, an app that consumes that data and renders it as a beautiful webpage: `/tweet.html`.
+  - **Tweet Text UI** An app that consumes that data and renders it as plain text `/tweet.txt`.
 
 
+## 2.1 `running.the.api`
+
+To configure the Tweet API:
+
+- Install `node` and `npm` ... somehow.
+- Create [a new Twitter app](https://apps.twitter.com/).
+- From the app dashboard, click on the _Keys and Access Tokens_ tab and click on the button to _Generate Access Tokens_.
+- Run the following commands, taking the values from the app dashboard:
+
+```
+export CONSUMER_KEY=...
+export CONSUMER_SECRET=...
+export TOKEN=...
+export TOKEN_SECRET=...
+export PORT=8080
+```
+
+To run it:
+
+```
+cd tweet-api
+npm install
+node .
+```
+
+To try it out:
+
+```
+curl http://localhost:8080/api/tweet | json_pp
+```
 
 
+## 2.2 `running.the.tweet.text.ui`
+
+To configure the tweet text UI, **in a new terminal**, run:
+
+```
+export TWEET_API_URL=http://localhost:8080/api/tweet
+export PORT=8081
+```
+
+To run it:
+
+```
+cd tweet-text-ui
+npm install
+node .
+```
+
+To try it out:
+
+```
+curl http://localhost:8081/tweet.txt
+```
 
 
+## 2.3 `running.the.tweet.ui`
+
+To configure, and run the tweet UI, **in yet another new terminal**, run:
+
+```
+export TWEET_API_URL=http://localhost:8080/api/tweet
+export PORT=8082
+cd tweet-ui
+npm install
+node .
+```
+
+To test, browse to http://localhost:8082/tweet.html.
+
+Cool, eh?
+
+## 3 `docker.builds`
 
 vim:expandtab:shiftwidth=2:softtabstop=2
