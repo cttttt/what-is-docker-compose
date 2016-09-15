@@ -11,4 +11,4 @@ RUN chown node ~node
 RUN sudo -HE -u node bash -c 'cd ~node && npm install'
 COPY . /home/node
 RUN chown -R node ~node
-CMD sudo -HE -u node bash -c 'cd ~node && PORT=8080 npm start'
+CMD [ "sudo", "-HE", "-u", "node", "bash", "-c", "cd ~node && PORT=8080 npm start" ]
