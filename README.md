@@ -2124,9 +2124,99 @@ docker-compose up -d
 
 ```
 
-## 8 `tbd?`
+## 8 `well.dbs`
 
-- Adding a db.
+> _Chris: Check out _well.dbs_
+
+- This part of the talk isn't fully fleshed out, but take a peek at the `docker-compose.yml` file.
+- Notice a new service, `db`.
+- Notice a new volume, `db_data`.
+- Notice that the volume is mounted where the DB stores data, `/usr/local/var/lib/couchdb`.
+- Now, I didn't have time to incorporate this into our little demo app, but:
+  - This is a functional couchdb instance:
+
+```
+# Add a db
+curl -XPUT http://localhost:5984/new_db
+
+# Add a document
+curl -XPUT http://localhost:5984/new_db/doc1 -d '{ "foo": "bar" }'
+
+# Fetch the document
+curl http://localhost:5984/new_db/doc1
+
+# And the data remains across a full shutdown and restart
+
+```
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+## 9 `tbd?`
+
+- Incorportate the db/a cache, and make the app stateless.
 - Scaling up services; a few problems.
 - Service discovery: `consul`.
 - Nginx hacks to force DNS lookups.
