@@ -1628,6 +1628,60 @@ docker-compose up -d
   - New container, `nginx`.
   - See the `nginx.conf`:  Notice domain names.
 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 ## 7 `thats.really.it`
 
 - That's really all there is to it.
@@ -1691,7 +1745,7 @@ docker-compose up -d
 
 ```
 
-## 7 `tbc?`
+## 8 `tbc?`
 
 - Scaling up services; a few problems.
 - Service discovery: `consul`.
