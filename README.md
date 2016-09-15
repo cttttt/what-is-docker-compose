@@ -4,6 +4,48 @@
 
 [Christopher Taylor](https://twitter.com/ctttttttttt)
 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 
 ## 0 `background`
 
@@ -15,13 +57,55 @@
 
 - If the first two points don't appeal to you, you'll be pretty bored during this talk.  Sorry.
 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 ## 0.1 `what.is.docker...again`
 
 - A lot of things.
 - Not all of the things.
 
 
-## 0.1.1 `process.runner.extraordinaire`
+### 0.1.1 `process.runner.extraordinaire`
 
 - Docker's great at running **processes**.
 - For example, to get the version of `bash`, you could run:
@@ -38,6 +122,55 @@ docker run ubuntu bash -v
 
 > Docker is a **process** runner.
 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 
 ### 0.1.2 `...from.a.context`
 
@@ -59,6 +192,54 @@ docker run ubuntu bash -v
 > Docker provides a way to run **processes** from contexts, called **images**.
 
 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
 ### 0.1.3 `...with.isolation`
 
 - Docker is, at its core, a simplified interface to a bunch of features in Linux, called [Linux Containers](https://linuxcontainers.org), or LXC.
@@ -75,6 +256,54 @@ docker run ubuntu bash -v
 
 > Docker provides a way to run **processes** from contexts, called **images** in isolated zones of execution called **containers**.
 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 
 ### 0.1.4 `docker.is.fast`
 
@@ -194,8 +423,8 @@ docker run ubuntu bash -v
 
 - Let's have a look at these three simple apps:
   - An app that produces data `/api/tweet`.
-  - An app that consumes that data and renders it as a beautiful (time permitting) webpage: `/tweet`.
-  - An app that consumes that data and renders it as plain text `/tweet/txt`.
+  - An app that consumes that data and renders it as a beautiful (time permitting) webpage: `/tweet.html`.
+  - An app that consumes that data and renders it as plain text `/tweet.txt`.
 
 ## 2 `how.to.configure`
 
