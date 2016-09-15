@@ -1165,25 +1165,87 @@ docker run --network=demo -ti -p 8080 cttttt/netcat nc server 8080
 
 # 0.1.10 `volumes.from.a.host.dir`
 
-- For example, to mount a directory from the host within a container:
+- For example, to mount a directory from the host within a container, use `-v HOST_DIR:CONTAINER_DIR`:
 
 ```
-# Mount a directory from the host in a container, and run a few commands
 $ docker run -v $PWD/vol:/tmp/vol ubuntu:14.04 bash -xc 'ls -l /tmp/vol/newfile; touch /tmp/vol/newfile'
 + ls -l /tmp/vol/newfile
 ls: cannot access /tmp/vol/newfile: No such file or directory
 + touch /tmp/vol/newfile
+```
 
-# This time, `newfile` from the previous run gets picked up
+- This time, `newfile` from the previous run gets picked up
+
+```
 $ docker run -v $PWD/vol:/tmp/vol ubuntu:14.04 bash -xc 'ls -l /tmp/vol/newfile; touch /tmp/vol/newfile'
 + ls -l /tmp/vol/newfile
 -rw-r--r-- 1 root root 0 Sep 15 12:07 /tmp/vol/newfile
 + touch /tmp/vol/newfile
+```
 
-# Because the volume is actually a filesystem on the host
+- Because the volume's on the host, you can treat it like any other directory on the host:
+
+```
 $ find vol
 vol
 vol/newfile
+```
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 # 0.1.11 `named.volumes`
@@ -1191,27 +1253,93 @@ vol/newfile
 - To create a named volume, just use the `docker volume` command:
 
 ```
-# First create a docker managed volume
 $ docker volume create --name demo
 demo
+```
 
-# Then mount it somewhere
+- Then mount it in a container:
+
+```
 $ docker run -v demo:/tmp/vol ubuntu:14.04 bash -xc 'ls -l /tmp/vol/newfile; touch /tmp/vol/newfile'
 + ls -l /tmp/vol/newfile
 ls: cannot access /tmp/vol/newfile: No such file or directory
 + touch /tmp/vol/newfile
+```
 
-# This time, `newfile` from the previous run gets picked up
+- This time, `newfile` from the previous run gets picked up
+
+```
 $ docker run -v demo:/tmp/vol ubuntu:14.04 bash -xc 'ls -l /tmp/vol/newfile; touch /tmp/vol/newfile'
 + ls -l /tmp/vol/newfile
 -rw-r--r-- 1 root root 0 Sep 15 12:10 /tmp/vol/newfile
 + touch /tmp/vol/newfile
+```
 
-# But now, in order to inspect the volume, we need to use a container.
+- Now, inspecting the container is a bit harder:  It involves running a container.
+
+```
 $ docker run -v demo:/tmp/vol ubuntu:14.04 ls -l /tmp/vol/newfile
 -rw-r--r-- 1 root root 0 Sep 15 12:10 /tmp/vol/newfile
 ```
 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 
 # 0.1.12 `backing.up.volumes`
 
@@ -1225,10 +1353,15 @@ $ docker run -v demo:/tmp/vol ubuntu:14.04 ls -l /tmp/vol/newfile
 
 - Here's how the first option works:
 
+```
+# Create a tarball in the container, and save it outside.
 $ docker run -v demo:/tmp/vol ubuntu:14.04 tar -C /tmp/vol -c . > backup.tar
+
+# Inspect the new backup.
 $ tar -tf backup.tar
 ./
 ./newfile
+```
 
 - The second option is application specific, but, for example, you could do a live backup of an SQL DB by doing an `sql dump` and saving the output on the host.
 
