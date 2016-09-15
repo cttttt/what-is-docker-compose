@@ -1,0 +1,25 @@
+version: "2"
+
+services:
+    tweet-api:
+        build: tweet-api
+        environment:
+            CONSUMER_KEY: $CONSUMER_KEY
+            CONSUMER_SECRET: $CONSUMER_SECRET
+            TOKEN: $TOKEN
+            TOKEN_SECRET: $TOKEN_SECRET
+
+    tweet-text-ui:
+        build: tweet-text-ui
+        ports:
+            - "8081:8080"
+        environment:
+            TWEET_API_URL: http://tweet-api:8080/api/tweet
+
+    tweet-ui:
+        build: tweet-ui
+        ports:
+            - "8082:8080"
+        environment:
+            TWEET_API_URL: http://tweet-api:8080/api/tweet
+
