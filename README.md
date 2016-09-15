@@ -1437,14 +1437,268 @@ Cool, eh?
 
 > _Chris: Show folks the `run` script_
 
-This script is difficult to maintain.
+This script is difficult to maintain:  It mixes data and code.
 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 
 ## 4 `describe.the.topology`
 
 > _Chris: Change branches to "describe.the.topology"_
 
-- The above mentioned
+- Remember that script, `run`?
+- It describes a topology, but with code.
+- Let's pull the data out.
+
+See `docker-compose.yml`.
+
+- What if there was a way to harness the information in this file to perform the actions from `run`?
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+## 5 `docker.compose`
+
+- With `docker-compose`, this data file is all you need.
+- To build images:
+
+```
+docker-compose build
+```
+
+- To start all of the services:
+
+```
+docker-compose up
+``` 
+
+- To start services in the background:
+
+```
+docker-compose up -d
+```
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+## 6 `add.a.load.balancer`
+
+> _Chris: Checkout "add.a.load.balancer"_
+
+- Notes:
+  - New container, `nginx`.
+  - See the `nginx.conf`:  Notice domain names.
+
+## 7 `thats.really.it`
+
+- That's really all there is to it.
+- `docker-compose` makes it a little easier to describe a topology.
+- Armed with this data, `docker-compose` does all the work!
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+## 7 `tbc?`
+
+- Scaling up services; a few problems.
+- Service discovery: `consul`.
+- Nginx hacks to force DNS lookups.
+- Scaling up services...is super cool.
+
+
 
 
 
