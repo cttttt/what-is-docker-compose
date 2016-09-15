@@ -1014,7 +1014,8 @@ nc localhost 30303
 
 
 ```  
-# 0.1.8 `isolated.network`
+
+## 0.1.8 `isolated.network`
 
 - Above, we set up routing allowing us to connect to a container from the host.
 - Container-to-contain communication is also allowed.
@@ -1098,7 +1099,249 @@ docker run --network=demo -ti -p 8080 cttttt/netcat nc server 8080
 
 
 ```
-# 0.1.9 `summary`
+
+# 0.1.9 `volumes`
+
+- Everything written by processes in a container goes to the top layer.
+- Almost everything.
+- Volumes are a way to mount another regular filesystem over a part of the container's *unionfs* filesystem.
+- Volumes survive container death.
+- They're therefore handy to store the persistent data from a database.
+- This *regular filesystem* could be any directory on the host or a managed filesystem called a *named volume*.
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+# 0.1.10 `volumes.from.a.host.dir`
+
+- For example, to mount a directory from the host within a container:
+
+```
+# Mount a directory from the host in a container, and run a few commands
+$ docker run -v $PWD/vol:/tmp/vol ubuntu:14.04 bash -xc 'ls -l /tmp/vol/newfile; touch /tmp/vol/newfile'
++ ls -l /tmp/vol/newfile
+ls: cannot access /tmp/vol/newfile: No such file or directory
++ touch /tmp/vol/newfile
+
+# This time, `newfile` from the previous run gets picked up
+$ docker run -v $PWD/vol:/tmp/vol ubuntu:14.04 bash -xc 'ls -l /tmp/vol/newfile; touch /tmp/vol/newfile'
++ ls -l /tmp/vol/newfile
+-rw-r--r-- 1 root root 0 Sep 15 12:07 /tmp/vol/newfile
++ touch /tmp/vol/newfile
+
+# Because the volume is actually a filesystem on the host
+$ find vol
+vol
+vol/newfile
+```
+
+# 0.1.11 `named.volumes`
+
+- To create a named volume, just use the `docker volume` command:
+
+```
+# First create a docker managed volume
+$ docker volume create --name demo
+demo
+
+# Then mount it somewhere
+$ docker run -v demo:/tmp/vol ubuntu:14.04 bash -xc 'ls -l /tmp/vol/newfile; touch /tmp/vol/newfile'
++ ls -l /tmp/vol/newfile
+ls: cannot access /tmp/vol/newfile: No such file or directory
++ touch /tmp/vol/newfile
+
+# This time, `newfile` from the previous run gets picked up
+$ docker run -v demo:/tmp/vol ubuntu:14.04 bash -xc 'ls -l /tmp/vol/newfile; touch /tmp/vol/newfile'
++ ls -l /tmp/vol/newfile
+-rw-r--r-- 1 root root 0 Sep 15 12:10 /tmp/vol/newfile
++ touch /tmp/vol/newfile
+
+# But now, in order to inspect the volume, we need to use a container.
+$ docker run -v demo:/tmp/vol ubuntu:14.04 ls -l /tmp/vol/newfile
+-rw-r--r-- 1 root root 0 Sep 15 12:10 /tmp/vol/newfile
+```
+
+
+# 0.1.12 `backing.up.volumes`
+
+- Backing up a volume is pretty straightforward.
+
+- You got two options:
+
+  - Back up the actual filesystem.
+
+  - Use the the application that created the volume data to dump its data.
+
+- Here's how the first option works:
+
+$ docker run -v demo:/tmp/vol ubuntu:14.04 tar -C /tmp/vol -c . > backup.tar
+$ tar -tf backup.tar
+./
+./newfile
+
+- The second option is application specific, but, for example, you could do a live backup of an SQL DB by doing an `sql dump` and saving the output on the host.
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+> Docker provides a way to run **processes** from starting points, called **images** in isolated zones of execution called **containers**.  Containers each have **network and filesystem** isolation.  The isolated filesystem is created by merging an image directory and an empty directory using a **union fs**.  New images can be created by **committing** containers.  A **docker build** is an automated sequence of container creations and commits that also results in a new image.  By default, all writes go to the top layer of the union filesystem, but subtrees can be exempted by mounting a **volume** over a directory.  The backing storage for a volume can be **managed by docker** or an arbitrary directory on the host.
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+# 0.1.13 `summary`
 
 > * Docker provides a way to run **processes** from starting points, called **images** in isolated zones of execution called **containers**.  
 > * Containers each have **network and filesystem** isolation.  
@@ -1106,6 +1349,9 @@ docker run --network=demo -ti -p 8080 cttttt/netcat nc server 8080
 > * New images can be created by **committing** containers.  
 > * A **docker build** is an automated sequence of container creations and commits that also results in a new image.  
 > * Docker also allows the creation of **virtual networks**.  Containers bound to a virtual network each have a hostname corresponding to the container name and can communicate freely.
+> * By default, all writes go to the top layer of the union filesystem. 
+> * Subtrees of the filesystem can be exempted from the above default by mounting a **volume** over any contained directory.  
+> * The backing storage for a volume can be **managed by docker** or an arbitrary directory on the host.
 
 ```
 
@@ -1745,8 +1991,9 @@ docker-compose up -d
 
 ```
 
-## 8 `tbc?`
+## 8 `tbd?`
 
+- Adding a db.
 - Scaling up services; a few problems.
 - Service discovery: `consul`.
 - Nginx hacks to force DNS lookups.
